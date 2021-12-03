@@ -71,7 +71,7 @@ def load_config(path=None):
     if not path:
         path = os.environ.get("MUNIBOT_CONFIG_FILE")
 
-    if not os.path.exists(path):
+    if not path or not os.path.exists(path):
         raise ValueError(
             """
 INI file not found. It must be a "munibot.ini" file in the current directory,
