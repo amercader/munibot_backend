@@ -23,12 +23,12 @@ app.add_middleware(
 
 
 @app.get("/")
-def read_root():
+def root():
     return {"Hello": "World"}
 
 
 @app.get("/search/{code}")
-def search(code: str, q: Optional[str] = None):
+def search(code: str, q: str):
 
     t1 = timer()
 
