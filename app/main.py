@@ -12,6 +12,7 @@ config = {}
 app = FastAPI()
 origins = [
     "http://localhost:7777",
+    "https://munibot.amercader.net",
 ]
 
 app.add_middleware(
