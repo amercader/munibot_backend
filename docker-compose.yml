@@ -2,11 +2,8 @@ version: '3'
 
 services:
   reverse-proxy:
-    # The official v2 Traefik docker image
     image: traefik:v2.5
-    # Enables the web UI and tells Traefik to listen to docker
     command:
-      - "--api.insecure=true"
       - "--providers.docker"
       - "--providers.docker.exposedbydefault=false"
       #- "--entrypoints.web.address=:80"
@@ -16,10 +13,7 @@ services:
       - "--certificatesresolvers.myresolver.acme.email=amercadero@gmail.com"
       - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"        
     ports:
-      # The HTTPS port
       - "443:443"
-      # The Web UI (enabled by --api.insecure=true)
-      - "8080:8080"
     volumes:
       - "./letsencrypt:/letsencrypt"
       # So that Traefik can listen to the Docker events
@@ -28,7 +22,7 @@ services:
     build:
       context: .
     volumes:
-      - /home/adria/dev/pyenvs/munis/src/data/munibot.sqlite:/opt/munibot/munibot.sqlite
+      - /home/adria/munibot/data/munibot.sqlite:/opt/munibot/munibot.sqlite
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.munibotapi.rule=Host(`api.munibot.amercader.net`)"
