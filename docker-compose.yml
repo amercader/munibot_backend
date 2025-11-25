@@ -22,7 +22,7 @@ services:
     build:
       context: .
     volumes:
-      - /home/adria/munibot/data/munibot.sqlite:/opt/munibot/munibot.sqlite
+      - /home/adria/munibot/config/munibot.sqlite:/opt/munibot/munibot.sqlite
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.munibotapi.rule=Host(`api.munibot.amercader.net`)"

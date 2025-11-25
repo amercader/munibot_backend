@@ -7,6 +7,8 @@ import sqlite3
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
+DEFAULT_MUNIBOT_DB = "/opt/munibot/munibot.sqlite"
+
 config = {}
 
 app = FastAPI()
@@ -43,9 +45,11 @@ def search(code: str, q: str):
 
 def _search(code, q):
 
-    load_config()
+    db_path = load_db_path()
 
-    if f"profile:{code}" not in config:
+    profiles = get_profiles()
+
+    if code not in profiles:
         raise HTTPException(status_code=404, detail="Unknown munibot")
 
     out = {"results": []}
@@ -67,19 +71,20 @@ def _search(code, q):
     return out
 
 
-def load_config(path=None):
+def load_db_path():
 
-    if not path:
-        path = os.environ.get("MUNIBOT_CONFIG_FILE")
+    path = os.environ.get("MUNIBOT_DB_FILE", DEFAULT_MUNIBOT_DB)
 
     if not path or not os.path.exists(path):
-        raise ValueError(
-            """
-INI file not found. It must be a "munibot.ini" file in the current directory,
-otherwise pass the location with the "--config" parameter""".strip()
-        )
+        raise ValueError(f"Database file not found: {path}")
 
-    cp = configparser.RawConfigParser()
-    cp.read(path)
-    for section in cp.sections():
-        config[section] = dict(cp[section])
+    return path
+
+
+def get_profiles(db_path):
+
+    with sqlite3.connect(db_path) as db:
+        out = db.execute(
+            "SELECT name FROM sqlite_master  WHERE type='table' AND name NOT LIKE 'sqlite_%'"
+        )
+    return [t[0] for t in out]
