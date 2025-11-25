@@ -47,7 +47,7 @@ def _search(code, q):
 
     db_path = load_db_path()
 
-    profiles = get_profiles()
+    profiles = get_profiles(db_path)
 
     if code not in profiles:
         raise HTTPException(status_code=404, detail="Unknown munibot")
