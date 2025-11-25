@@ -2,16 +2,24 @@ version: '3'
 
 services:
   reverse-proxy:
-    image: traefik:v2.5
+    image: traefik:v3.4
+    container_name: "traefik"
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - proxy      
     command:
-      - "--providers.docker"
+      - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.network=proxy"
       #- "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
-      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
-      #- "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
-      - "--certificatesresolvers.myresolver.acme.email=amercadero@gmail.com"
-      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"        
+      - "--certificatesresolvers.le.acme.tlschallenge=true"
+      #- "--certificatesresolvers.le.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+      - "--certificatesresolvers.le.acme.email=amercadero@gmail.com"
+      - "--certificatesresolvers.le.acme.storage=/letsencrypt/acme.json"        
+      - "--certificatesresolvers.le.acme.httpchallenge.entrypoint=web"
     ports:
       - "443:443"
     volumes:
@@ -21,10 +29,17 @@ services:
   munibot-api:
     build:
       context: .
+    restart: unless-stopped
+    networks:
+      - proxy
     volumes:
       - /home/adria/munibot/config/munibot.sqlite:/opt/munibot/munibot.sqlite
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.munibotapi.rule=Host(`api.munibot.amercader.net`)"
       - "traefik.http.routers.munibotapi.entrypoints=websecure"
-      - "traefik.http.routers.munibotapi.tls.certresolver=myresolver"      
+      - "traefik.http.routers.munibotapi.tls.certresolver=le"      
+
+networks:
+  proxy:
+    name: proxy
