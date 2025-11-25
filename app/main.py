@@ -62,7 +62,7 @@ def _search(code, q):
         LIMIT 100
         """
     params = (q + "%",)
-    with sqlite3.connect(config[f"profile:{code}"]["db_path"]) as db:
+    with sqlite3.connect(db_path) as db:
         data = db.execute(sql, params)
         for row in data:
             out["results"].append(
