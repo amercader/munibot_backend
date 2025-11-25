@@ -1,4 +1,4 @@
-FROM python:3.9
+FROM python:3.14
 
 WORKDIR /opt/munibot
 ENV MUNIBOT_CONFIG_FILE=/opt/munibot/munibot.ini
